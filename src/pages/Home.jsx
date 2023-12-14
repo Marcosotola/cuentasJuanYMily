@@ -116,6 +116,7 @@ const Home = () => {
       });
   };
   return (
+    <>
     <div className="container">
       <div className="d-flex justify-content-between">
         <h3 className="my-4">Registro de Cuentas</h3>
@@ -245,6 +246,7 @@ const Home = () => {
       </form>
       <h6 className="btn btn-success btn-m">Saldo: ${saldo}</h6>
     </div>
+    </>
   );
 };
 

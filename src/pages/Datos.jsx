@@ -12,6 +12,7 @@ import MilyPami from "./MilyPami.jpg"
 
 const Datos = () => {
   return (
+    <>
     <div className="m-2">
       <h4 className="text-warning text-center mb-2">Datos</h4>
       <table className="table table-hover">
@@ -125,6 +126,7 @@ const Datos = () => {
         </tbody>
       </table>
     </div>
+    </>
   );
 };
 
