@@ -35,6 +35,7 @@ const Movimientos = () => {
             <th>Monto</th>
             <th>Categoría</th>
             <th>Observaciones</th>
+            <th>Archivo</th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +46,7 @@ const Movimientos = () => {
               <td>${movimiento.monto.toFixed(2)}</td>
               <td>{movimiento.categoria}</td>
               <td>{movimiento.observaciones}</td>
+              <td>{movimiento.archivoUrl}</td>
             </tr>
           ))}
         </tbody>

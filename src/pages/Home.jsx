@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { db } from "../firebase";
+import { db, storage } from "../firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCalendar,
   faDollarSign,
   faList,
   faComment,
-  faCommentDollar,
+  faFile,
+  faImage,
 } from "@fortawesome/free-solid-svg-icons";
 import Datos from "./Datos";
 
@@ -17,6 +18,7 @@ const Home = () => {
   const [observaciones, setObservaciones] = useState("");
   const [fecha, setFecha] = useState("");
   const [saldo, setSaldo] = useState(0);
+  const [archivo, setArchivo] = useState(null);
 
   useEffect(() => {
     const unsubscribe = db
@@ -62,7 +64,12 @@ const Home = () => {
     setFecha(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleArchivoChange = (e) => {
+    const file = e.target.files[0];
+    setArchivo(file);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const montoNumerico = parseFloat(monto);
@@ -80,6 +87,18 @@ const Home = () => {
       fecha,
     };
 
+    // Subir el archivo a Firebase Storage
+    if (archivo) {
+      const storageRef = storage.ref();
+      const archivoRef = storageRef.child(archivo.name);
+      await archivoRef.put(archivo);
+      const archivoUrl = await archivoRef.getDownloadURL();
+
+      // Agregar el enlace del archivo a los datos del movimiento
+      movimiento.archivoUrl = archivoUrl;
+    }
+
+    // Guardar los datos en Firebase Database
     db.collection("cuentas")
       .add(movimiento)
       .then(() => {
@@ -90,12 +109,12 @@ const Home = () => {
         setCategoria("");
         setObservaciones("");
         setFecha("");
+        setArchivo(null);
       })
       .catch((error) => {
         console.error("Error al agregar el movimiento: ", error);
       });
   };
-
   return (
     <div className="container">
       <div className="d-flex justify-content-between">
@@ -111,7 +130,7 @@ const Home = () => {
         </div>
       </div>
       <Datos />
-      <h3 className="m-5  text-center text-warning p-1">Ingresar Movimiento</h3>
+      <h3 className="m-5 text-center text-warning p-1">Ingresar Movimiento</h3>
 
       <form onSubmit={handleSubmit} className="mb-5">
         <div className="mb-3">
@@ -166,7 +185,7 @@ const Home = () => {
         <div className="mb-3">
           <div className="input-group">
             <span className="input-group-text">
-              <FontAwesomeIcon icon={faComment} />
+              <FontAwesomeIcon icon={faFile} />
             </span>
             <select
               className="form-select form-select-lg"
@@ -195,7 +214,7 @@ const Home = () => {
         <div className="mb-3">
           <div className="input-group">
             <span className="input-group-text">
-              <FontAwesomeIcon icon={faCommentDollar} />
+              <FontAwesomeIcon icon={faComment} />
             </span>
             <input
               placeholder="Observaciones"
@@ -204,6 +223,19 @@ const Home = () => {
               id="observaciones"
               value={observaciones}
               onChange={handleObservacionesChange}
+            />
+          </div>
+        </div>
+        <div className="mb-3">
+          <div className="input-group">
+            <span className="input-group-text">
+              <FontAwesomeIcon icon={faImage} />
+            </span>
+            <input
+              type="file"
+              className="form-control form-control-lg"
+              id="archivo"
+              onChange={handleArchivoChange}
             />
           </div>
         </div>
